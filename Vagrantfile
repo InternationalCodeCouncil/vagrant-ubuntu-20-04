@@ -20,7 +20,8 @@ Vagrant.configure("2") do |config|
     config.vm.network :forwarded_port, port_options
   end
 
-  config.vm.synced_folder settings[:synced_folder][:host], settings[:synced_folder][:guest], owner: "vagrant", group: "vagrant"
+  config.vm.synced_folder 
+  config.vm.synced_folder settings[:synced_folder][:host], settings[:synced_folder][:guest], owner: "vagrant", group: "vagrant", type: "rsync", rsync__auto: true, rsync__exclude: ['generated*', 'var*', 'pub*',]
 
   settings[:copy_files].each do |file_options|
     config.vm.provision :file, file_options
