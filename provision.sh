@@ -38,6 +38,18 @@ echo '==> Installing MariaDB'
 
 DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server=10.4 &>/dev/null
 
+echo '==> Setting Up ElasticSearch Repository'
+
+curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+apt-get -q=2 update
+DEBIAN_FRONTEND=noninteractive apt-get -q=2 install elasticsearch &>/dev/null
+
+echo '==> Enabling Elasticsearch'
+systemctl start elasticsearch
+systemctl enable elasticsearch
+
+
 echo '==> Setting PHP 7.4 repository'
 
 add-apt-repository -y ppa:ondrej/php &>/dev/null
@@ -55,6 +67,14 @@ a2enmod php7.4 &>/dev/null
 cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
 PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
 sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
+
+echo '==> Installing Composer'
+cd ~
+curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+composer self-update 1.10.26
 
 echo '==> Installing Adminer'
 
@@ -92,6 +112,8 @@ svn --version | grep svn,
 git --version
 apache2 -v | head -n1
 mysql -V
+bin/elasticsearch --version
+
 php -v | head -n1
 python2 --version 2>/dev/stdout
 python3 --version
