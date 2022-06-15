@@ -36,7 +36,7 @@ apt-get -q=2 update
 
 echo '==> Installing MariaDB'
 
-DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server &>/dev/null
+DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server=10.4 &>/dev/null
 
 echo '==> Setting PHP 7.4 repository'
 
