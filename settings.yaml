@@ -2,34 +2,31 @@
 :machine:
   # https://app.vagrantup.com/bento/boxes/ubuntu-20-04
   :box: bento/ubuntu-20.04 # 64GB HDD
-  :memory: 3072 # 3GB RAM
-  :cpus: 1
-  :hostname: ubuntu-20-04
+  :memory: 8072 # 8GB RAM
+  :cpus: 4
+  :hostname: ubuntu-20-04-icc
   :timezone: Canada/Pacific
 
 :forwarded_ports:
 # SSH
 - :id: ssh
-  :host: 2200
+  :host: 2222
   :guest: 22
 # HTTP
-- :host: 8000
+- :host: 80
   :guest: 80
 # dB
 - :host: 33060
   :guest: 3306
 
 :synced_folder:
-  :host: ~/Code
+  :host: C:/Sites/
   :guest: /home/vagrant/Code
 
 :copy_files:
-- :source: ~/.ssh
-  :destination: /home/vagrant/.ssh
-- :source: ~/.gitconfig
-  :destination: /home/vagrant/.gitconfig
-- :source: ~/.subversion
-  :destination: /home/vagrant/.subversion
+- :source: C:/VM/ubuntu-20-04-icc/backup/dbs
+  :destination: /home/vagrant/
+
 
 :php_error_reporting: E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT
 ...

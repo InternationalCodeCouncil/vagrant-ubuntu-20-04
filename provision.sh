@@ -103,6 +103,9 @@ echo '==> Cleaning apt cache'
 apt-get -q=2 autoclean
 apt-get -q=2 autoremove
 
+echo '==> Setup static pwd for vagrant user(12345)'
+echo "12345" | passwd --stdin vagrant
+
 echo '==> Versions:'
 
 lsb_release -d | cut -f 2
