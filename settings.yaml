@@ -21,7 +21,7 @@
 
 :synced_folder:
   :host: C:/Sites/
-  :guest: /home/vagrant/Code
+  :guest: /home/vagrant/Sites
 
 :copy_files:
 - :source: C:/VM/ubuntu-20-04-icc/backup/dbs
