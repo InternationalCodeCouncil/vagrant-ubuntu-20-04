@@ -28,7 +28,7 @@ a2enconf localhost &>/dev/null
 a2enmod rewrite vhost_alias &>/dev/null
 a2ensite virtualhost &>/dev/null
 
-echo '==> Setting MariaDB 10.6 repository'
+echo '==> Setting MariaDB 10.3 repository'
 
 apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc' &>/dev/null
 cp /vagrant/config/MariaDB.list /etc/apt/sources.list.d/MariaDB.list
@@ -36,7 +36,7 @@ apt-get -q=2 update
 
 echo '==> Installing MariaDB'
 
-DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server=10.4 &>/dev/null
+DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server=10.3 -y &>/dev/null
 
 echo '==> Setting Up ElasticSearch Repository'
 
@@ -58,7 +58,7 @@ apt-get -q=2 update
 echo '==> Installing PHP'
 
 apt-get -q=2 install php7.4 libapache2-mod-php7.4 libphp7.4-embed \
-    php7.4-bcmath php7.4-bz2 php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-imap php7.4-intl php7.4-json \
+    php7.4-bcmath php7.4-gmp php7.4-bz2 php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-imap php7.4-intl php7.4-json \
     php7.4-mbstring php7.4-mysql php7.4-mysqlnd php7.4-opcache php7.4-pgsql php7.4-pspell php7.4-readline \
     php7.4-soap php7.4-sqlite3 php7.4-tidy php7.4-xdebug php7.4-xml php7.4-xmlrpc php7.4-yaml php7.4-zip &>/dev/null
 a2dismod mpm_event &>/dev/null
@@ -98,13 +98,21 @@ echo '==> Starting MariaDB'
 service mysql restart
 mysqladmin -u root password ""
 
+echo '==>Importing dbs from /home/vagrant/dbs/'
+cd /home/vagrant/dbs/ && cat *.sql | mysql -u root
+
 echo '==> Cleaning apt cache'
 
 apt-get -q=2 autoclean
 apt-get -q=2 autoremove
 
-echo '==> Setup static pwd for vagrant user(12345)'
-echo "12345" | passwd --stdin vagrant
+echo '==> Setup static pwd for vagrant user(vagrant)'
+
+sed -i 's/^#* *\(PermitRootLogin\)\(.*\)$/\1 yes/' /etc/ssh/sshd_config
+sed -i 's/^#* *\(PasswordAuthentication\)\(.*\)$/\1 yes/' /etc/ssh/sshd_config
+systemctl restart sshd.service
+echo -e "vagrant\nvagrant" | (passwd vagrant)
+echo -e "root\nroot" | (passwd root)
 
 echo '==> Versions:'
 
@@ -115,7 +123,7 @@ svn --version | grep svn,
 git --version
 apache2 -v | head -n1
 mysql -V
-bin/elasticsearch --version
+elasticsearch --version
 
 php -v | head -n1
 python2 --version 2>/dev/stdout
