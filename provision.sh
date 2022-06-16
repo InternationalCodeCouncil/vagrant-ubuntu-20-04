@@ -45,9 +45,14 @@ echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee 
 apt-get -q=2 update
 DEBIAN_FRONTEND=noninteractive apt-get -q=2 install elasticsearch &>/dev/null
 
+echo '==> Installing Elasticsearch Plugins'
+
+/usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-phonetic analysis-icu
+
 echo '==> Enabling Elasticsearch'
 systemctl start elasticsearch
 systemctl enable elasticsearch
+
 
 
 echo '==> Setting PHP 7.4 repository'
