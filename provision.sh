@@ -50,20 +50,17 @@ systemctl start elasticsearch
 systemctl enable elasticsearch
 
 
-echo '==> Setting PHP 7.4 repository'
+echo '==> Setting PHP 8.0 repository'
 
 add-apt-repository -y ppa:ondrej/php &>/dev/null
 apt-get -q=2 update
 
 echo '==> Installing PHP'
 
-apt-get -q=2 install php7.4 libapache2-mod-php7.4 libphp7.4-embed \
-    php7.4-bcmath php7.4-bz2 php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-imap php7.4-intl php7.4-json \
-    php7.4-mbstring php7.4-mysql php7.4-mysqlnd php7.4-opcache php7.4-pgsql php7.4-pspell php7.4-readline \
-    php7.4-soap php7.4-sqlite3 php7.4-tidy php7.4-xdebug php7.4-xml php7.4-xmlrpc php7.4-yaml php7.4-zip &>/dev/null
+apt-get -q=2 install php8.0 libapache2-mod-php8.0 php8.0-bcmath php8.0-bz2 php8.0-cli php8.0-curl php8.0-fpm php8.0-gd php8.0-imap php8.0-intl php8.0-json php8.0-mbstring php8.0-mysql php8.0-mysqlnd php8.0-opcache php8.0-pgsql php8.0-pspell php8.0-readline php8.0-soap php8.0-sqlite3 php8.0-tidy php8.0-xdebug php8.0-xml php8.0-xmlrpc php8.0-yaml php8.0-zip &>/dev/null
 a2dismod mpm_event &>/dev/null
 a2enmod mpm_prefork &>/dev/null
-a2enmod php7.4 &>/dev/null
+a2enmod php8.0 &>/dev/null
 cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
 PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
 sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
@@ -74,7 +71,7 @@ curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
 sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-composer self-update 1.10.26
+composer self-update 2.2.18
 
 echo '==> Installing Adminer'
 
