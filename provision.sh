@@ -57,7 +57,7 @@ apt-get -q=2 update
 
 echo '==> Installing PHP'
 
-apt-get -q=2 install php8.0 libapache2-mod-php8.0 php8.0-bcmath php8.0-bz2 php8.0-cli php8.0-curl php8.0-fpm php8.0-gd php8.0-imap php8.0-intl php8.0-json php8.0-mbstring php8.0-mysql php8.0-mysqlnd php8.0-opcache php8.0-pgsql php8.0-pspell php8.0-readline php8.0-soap php8.0-sqlite3 php8.0-tidy php8.0-xdebug php8.0-xml php8.0-xmlrpc php8.0-yaml php8.0-zip &>/dev/null
+apt-get -q=2 install php8.0 libapache2-mod-php8.0 php8.0-bcmath php8.0-bz2 php8.0-cli php8.0-curl php8.0-fpm php8.0-gd php8.0-imap php8.0-intl php8.0-mbstring php8.0-mysql php8.0-mysqlnd php8.0-opcache php8.0-pgsql php8.0-pspell php8.0-readline php8.0-soap php8.0-sqlite3 php8.0-tidy php8.0-xdebug php8.0-xml php8.0-xmlrpc php8.0-yaml php8.0-zip &>/dev/null
 a2dismod mpm_event &>/dev/null
 a2enmod mpm_prefork &>/dev/null
 a2enmod php8.0 &>/dev/null
