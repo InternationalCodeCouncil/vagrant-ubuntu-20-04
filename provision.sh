@@ -28,39 +28,52 @@ a2enconf localhost &>/dev/null
 a2enmod rewrite vhost_alias &>/dev/null
 a2ensite virtualhost &>/dev/null
 
-echo '==> Setting MariaDB 10.6 repository'
+echo '==> Setting MariaDB 10.4 repository'
 
-apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc' &>/dev/null
-cp /vagrant/config/MariaDB.list /etc/apt/sources.list.d/MariaDB.list
 apt-get -q=2 update
+apt-get install software-properties-common gnupg -y
+apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
+add-apt-repository --remove 'https://mirrors.evowise.com/mariadb/repo/10.4/ubuntu'
+add-apt-repository 'deb [arch=amd64,arm64,ppc64el] https://mirror.netcologne.de/mariadb/repo/10.4/ubuntu focal main'
 
 echo '==> Installing MariaDB'
-
-DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server=10.4 &>/dev/null
+apt-get -q=2 update
+DEBIAN_FRONTEND=noninteractive apt-get -q=2 install mariadb-server
 
 echo '==> Setting Up ElasticSearch Repository'
 
 curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
 apt-get -q=2 update
-DEBIAN_FRONTEND=noninteractive apt-get -q=2 install elasticsearch &>/dev/null
+DEBIAN_FRONTEND=noninteractive apt-get -q=2 install elasticsearch
 
 echo '==> Enabling Elasticsearch'
 systemctl start elasticsearch
 systemctl enable elasticsearch
 
+cd /usr/share/elasticsearch 
+bin/elasticsearch-plugin install analysis-phonetic
+bin/elasticsearch-plugin install analysis-icu
+cd /home/vagrant/
 
-echo '==> Setting PHP 8.0 repository'
+echo '==> Setting PHP 8.1 repository'
 
 add-apt-repository -y ppa:ondrej/php &>/dev/null
 apt-get -q=2 update
 
 echo '==> Installing PHP'
 
-apt-get -q=2 install php8.0 libapache2-mod-php8.0 php8.0-bcmath php8.0-bz2 php8.0-cli php8.0-curl php8.0-fpm php8.0-gd php8.0-imap php8.0-intl php8.0-mbstring php8.0-mysql php8.0-mysqlnd php8.0-opcache php8.0-pgsql php8.0-pspell php8.0-readline php8.0-soap php8.0-sqlite3 php8.0-tidy php8.0-xdebug php8.0-xml php8.0-xmlrpc php8.0-yaml php8.0-zip &>/dev/null
+apt-get -q=2 install php8.1 libapache2-mod-php8.1 libphp8.0-embed \
+	php8.1-ctype php8.1-dom php8.1-fileinfo php8.1-iconv php8.1-simplexml \
+	php8.1-sockets php8.1-tokenizer php8.1-xmlwriter php8.1-xsl \
+    php8.1-bcmath php8.1-gmp php8.1-bz2 php8.1-cli php8.1-curl php8.1-fpm php8.1-gd php8.1-imap php8.1-intl \
+    php8.1-mbstring php8.1-mysql php8.1-mysqlnd php8.1-opcache php8.1-pgsql php8.1-pspell php8.1-readline \
+    php8.1-soap php8.1-sqlite3 php8.1-tidy php8.1-xdebug php8.1-xml php8.1-xmlrpc php8.1-yaml php8.1-zip
+	
 a2dismod mpm_event &>/dev/null
 a2enmod mpm_prefork &>/dev/null
-a2enmod php8.0 &>/dev/null
+a2enmod php8.1 &>/dev/null
+a2enmod headers &>/dev/null
 cp /vagrant/config/php.ini.htaccess /var/www/.htaccess
 PHP_ERROR_REPORTING_INT=$(php -r 'echo '"$PHP_ERROR_REPORTING"';')
 sed -i 's|PHP_ERROR_REPORTING_INT|'$PHP_ERROR_REPORTING_INT'|' /var/www/.htaccess
@@ -92,7 +105,7 @@ service apache2 restart
 
 echo '==> Starting MariaDB'
 
-service mysql restart
+service mariadb restart
 mysqladmin -u root password ""
 
 echo '==> Cleaning apt cache'
@@ -111,7 +124,7 @@ curl --version | head -n1 | cut -d '(' -f 1
 svn --version | grep svn,
 git --version
 apache2 -v | head -n1
-mysql -V
+mariadb -V
 bin/elasticsearch --version
 
 php -v | head -n1
